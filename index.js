@@ -13,13 +13,14 @@ let manipulate = () => {
         switch (nameArr[0]) {
             case 'login':
                 if (nameArr.length > 1) {
-                    loginUser(nameArr[1])
+                    currentUser = loginUser(nameArr[1])
                     console.log(`Hello ${currentUser.name}\nYour balance is $${currentUser.balance}`);
                 }
                 break;
             case 'deposit':
                 if (nameArr.length > 1) {
-                    depositAmount(currentUser.id, nameArr[1]);
+                    let data = depositAmount(currentUser.id, nameArr[1]);
+                    console.log(`Your balance is ${data.balance}`);
                 }
                 break;
             case 'logout':
@@ -46,12 +47,19 @@ let manipulate = () => {
 
 
 let depositAmount = (userId, amount) => {
-    if (Object.keys(currentUser).length > 0) {
-        currentUser['balance'] = parseFloat(currentUser['balance']) + parseFloat(amount)
-        userData[userId] = currentUser
-        console.log(`Your balance is ${currentUser['balance']}`);
+    if(amount > 0) {
+        if (Object.keys(currentUser).length > 0) {
+            currentUser['balance'] = parseFloat(currentUser['balance']) + parseFloat(amount)
+            userData[userId] = currentUser
+            return {
+                balance: currentUser['balance'],
+                depositAmount: amount
+            }
+        } else {
+            console.log(`You are not authorised to deposit, please login to continue`)
+        }
     } else {
-        console.log(`You are not authorised to deposit, please login to continue`)
+        console.log(`Received invalid amount for deposit`)
     }
 }
 
@@ -80,6 +88,7 @@ let loginUser = (userName) => {
         }
         userData[id] = currentUser;
     }
+    return currentUser
 }
 
 let transferAmount = (amount, userName) => {
@@ -98,3 +107,9 @@ let transferAmount = (amount, userName) => {
 }
 
 manipulate();
+module.exports = {
+    manipulate,
+    loginUser,
+    transferAmount,
+    depositAmount
+}
